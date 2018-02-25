@@ -69,8 +69,7 @@ function preload() {
 		up_imgs.push(loadImage("".concat("up_", i, ".jpg")));
 		straight_imgs.push(loadImage("".concat("straight_", i, ".jpg")));
 		down_imgs.push(loadImage("".concat("down_", i, ".jpg")));
-
-        	}
+    }
 }
 
 function setup() {
@@ -85,22 +84,15 @@ function setup() {
     }
 
     points = new Points(up_imgs[0].width, up_imgs[0].height, initialPointCount);
-
-    //for (let i = 1; i < 8; i++) {
-    //    image(up_imgs[i-1], 0, 0);
-    //    up_imgs[i-1].loadPixels();
-
-    //    image(straight_imgs[i-1], 0, 0);
-    //    straight_imgs[i-1].loadPixels();
-
-    //    image(down_imgs[i-1], 0, 0);
-    //    down_imgs[i-1].loadPixels();
-    //}
 }
 
 function selectImage() {
 	// Map the mouse x's position to look left/right.
-	let xIndex = int(map(mouseX, 0, width, 0, up_imgs.length));
+    if (mouseX <= width) {
+        var xIndex = int(map(mouseX, 0, width, 0, up_imgs.length));
+    } else {
+        var xIndex = up_imgs.length - 1;
+    }
 	
 	// Map the mouse's y position to look up/down.
 	if (mouseY < height/4) {
@@ -118,7 +110,6 @@ function draw() {
     let targetImage = selectImage();
     targetImage.loadPixels();
     
-    //loadPixels();
     let transform = [];
     for (const point of points.points) {
         let index = Math.floor((point.y * targetImage.width + point.x) * 4);
@@ -127,19 +118,11 @@ function draw() {
         let g = targetImage.pixels[index + 1];
         let b = targetImage.pixels[index + 2];
         let a = targetImage.pixels[index + 3];
-
-        //pixels[index] = r;
-        //pixels[index + 1] = g;
-        //pixels[index + 2] = b;
-        //pixels[index + 3] = a;
         
         transform.push({ x: point.x, y: point.y, r: r, g: g, b: b, a: a });
     }
-    //updatePixels();
-
 
     points.addJitteredPoint(mouseX, mouseY);
-    
 
     voronoi = new Voronoi();
     voronoi.recycle(diagram);
@@ -175,7 +158,4 @@ function draw() {
           point(diagram.cells[i].site.x, diagram.cells[i].site.y);
         }
     }
-
-    //image(targetImage, 0, 0);
-    
 }
