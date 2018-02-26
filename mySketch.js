@@ -1,27 +1,26 @@
 /*
-I'm watching you!
-
-I took a series of images (7x3) to map the mouse's position so it seems like I'm looking at the mouse.
-
 Controls:
-	- Move the mouse around.
+    - Move the mouse around.
 
 Authors:
     Ajay Jain
-    Based on a sketch by Jason Labbe
+    Originally based on a sketch by Jason Labbe
 */
 
 const initialPointCount = 200;
-const jitter = 15;
+const jitter = 25;
 
 let up_imgs = [];
 let straight_imgs = [];
 let down_imgs = [];
 
-let diagram; // Cache for voronoi?
+let diagram; // Cache/output for voronoi
 let boundingBox;
 
 let points;
+
+let widthFactor = 1;
+let heightFactor = 1;
 
 class Points {
     constructor(width, height, count) {
@@ -36,17 +35,19 @@ class Points {
     generatePoints() {
         this.points.splice(0, this.points.length);
         
-        //for (let x = 0; x < this.width; x += 25) {
-        //    for (let y = 0; y < this.height; y += 25) {
-        //        this.points.push(new p5.Vector(x, y));
-        //    }
-        //}
-
-        for (let i = 0; i < this.count; i++) {
-            let x = Math.floor(random(this.width));
-            let y = Math.floor(random(this.height));
-            this.points.push(new p5.Vector(x, y));
+        // Generate anchor points in a grid
+        for (let x = 0; x < this.width; x += 100) {
+            for (let y = 0; y < this.height; y += 100) {
+                this.points.push(new p5.Vector(x, y));
+            }
         }
+
+        // Generate random anchor points
+        //for (let i = 0; i < this.count; i++) {
+        //    let x = Math.floor(random(this.width));
+        //    let y = Math.floor(random(this.height));
+        //    this.points.push(new p5.Vector(x, y));
+        //}
     }
 
     addPoint(x, y) {
@@ -64,17 +65,17 @@ class Points {
 }
 
 function preload() {
-	// Preload all the images.
-	for (let i = 1; i < 6; i++) {
-		up_imgs.push(loadImage("".concat("up_", i, "_open.jpg")));
-		straight_imgs.push(loadImage("".concat("straight_", i, "_open.jpg")));
-		down_imgs.push(loadImage("".concat("down_", i, "_open.jpg")));
+    // Preload all the images.
+    for (let i = 1; i < 6; i++) {
+        up_imgs.push(loadImage("".concat("up_", i, "_open.jpg")));
+        straight_imgs.push(loadImage("".concat("straight_", i, "_open.jpg")));
+        down_imgs.push(loadImage("".concat("down_", i, "_open.jpg")));
     }
 }
 
 function setup() {
-	// Make the canvas size the same as the images to map easier.
-	createCanvas(up_imgs[0].width, up_imgs[0].height);
+    // Make the canvas size the same as the images to map easier.
+    createCanvas(up_imgs[0].width, up_imgs[0].height);
 
     boundingBox = {
         xl: 1,
@@ -87,25 +88,31 @@ function setup() {
 }
 
 function selectImage() {
-	// Map the mouse x's position to look left/right.
-    if (mouseX <= width) {
+    // Map the mouse x's position to look left/right.
+    if (mouseX < 0) {
+        var xIndex = 0;
+    } else if (mouseX < width) {
         var xIndex = int(map(mouseX, 0, width, 0, up_imgs.length));
     } else {
         var xIndex = up_imgs.length - 1;
     }
-	
-	// Map the mouse's y position to look up/down.
-	if (mouseY < height/4) {
-		return up_imgs[xIndex];
-	} else if (mouseY > height-height/4) {
-		return down_imgs[xIndex];
-	} else {
-		return straight_imgs[xIndex];
-	}
+    
+    // Map the mouse's y position to look up/down.
+    if (mouseY < height/4) {
+        return up_imgs[xIndex];
+    } else if (mouseY > height-height/4) {
+        return down_imgs[xIndex];
+    } else {
+        return straight_imgs[xIndex];
+    }
 }
 
 function draw() {
-	background(0);
+    background(0);
+
+    mouseX = Math.round(mouseX);
+    mouseY = Math.round(mouseY);
+    console.log(mouseX, mouseY);
 
     let targetImage = selectImage();
     targetImage.loadPixels();
