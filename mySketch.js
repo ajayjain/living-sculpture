@@ -65,10 +65,10 @@ class Points {
 
 function preload() {
 	// Preload all the images.
-	for (let i = 1; i < 8; i++) {
-		up_imgs.push(loadImage("".concat("up_", i, ".jpg")));
-		straight_imgs.push(loadImage("".concat("straight_", i, ".jpg")));
-		down_imgs.push(loadImage("".concat("down_", i, ".jpg")));
+	for (let i = 1; i < 6; i++) {
+		up_imgs.push(loadImage("".concat("up_", i, "_open.jpg")));
+		straight_imgs.push(loadImage("".concat("straight_", i, "_open.jpg")));
+		down_imgs.push(loadImage("".concat("down_", i, "_open.jpg")));
     }
 }
 
